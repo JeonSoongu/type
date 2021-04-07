@@ -95,20 +95,21 @@ var Board = /** @class */ (function () {
     };
     Board.prototype.findAllByCategoryNum = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var categoryName, categoryNum, lastNum, boardsAll, boards, err_2;
+            var categoryName, categoryNum, lastNum, num, boardsAll, boards, err_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         categoryName = this.params.categoryName;
                         categoryNum = Category_1.default[categoryName];
                         lastNum = this.query.lastNum;
+                        num = parseInt(lastNum);
                         if (categoryNum === undefined) {
                             return [2 /*return*/, { success: false, msg: "존재하지 않는 게시판입니다." }];
                         }
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, BoardStorage_1.default.findAllByCategoryNum(categoryNum, lastNum)];
+                        return [4 /*yield*/, BoardStorage_1.default.findAllByCategoryNum(categoryNum, num)];
                     case 2:
                         boardsAll = _a.sent();
                         boards = Object.values(JSON.parse(JSON.stringify(boardsAll)));
@@ -126,7 +127,7 @@ var Board = /** @class */ (function () {
     };
     Board.prototype.findOneByNum = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var num, categoryName, categoryNum, studentId, boards, comments, watchListFlag, board, replaceArrayByBoard, replaceArrayByComment, err_3;
+            var num, categoryName, categoryNum, studentId, boards, comments, watchListFlag, board, replaceArrayByComment, err_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -149,13 +150,13 @@ var Board = /** @class */ (function () {
                     case 4:
                         watchListFlag = _a.sent();
                         board = Object.values(JSON.parse(JSON.stringify(boards)));
-                        replaceArrayByBoard = board[0];
+                        board = board[0];
                         replaceArrayByComment = Object.values(JSON.parse(JSON.stringify(comments)));
-                        if (categoryNum === replaceArrayByBoard.categoryNum) {
+                        if (categoryNum === board.categoryNum) {
                             return [2 /*return*/, {
                                     success: true,
                                     msg: "게시판 상세 조회 성공",
-                                    replaceArrayByBoard: replaceArrayByBoard,
+                                    board: board,
                                     replaceArrayByComment: replaceArrayByComment,
                                     watchListFlag: watchListFlag,
                                     categoryName: categoryName,
@@ -306,16 +307,17 @@ var Board = /** @class */ (function () {
     };
     Board.prototype.updateOnlyStatus = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var num, body, isUpdate, err_8;
+            var num, body, number, isUpdate, err_8;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         num = this.params.num;
                         body = this.body;
+                        number = parseInt(num);
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, BoardStorage_1.default.updateOnlyStatusByNum(body, num)];
+                        return [4 /*yield*/, BoardStorage_1.default.updateOnlyStatusByNum(body, number)];
                     case 2:
                         isUpdate = _a.sent();
                         if (isUpdate)

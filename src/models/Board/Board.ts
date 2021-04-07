@@ -4,6 +4,7 @@ import Category from "../Category/Category";
 import String from "../../utils/String";
 import CommentStorage from "./Comment/CommentStorage";
 import Error from "../../utils/Error";
+import { params, query } from "../../config/types";
 
 interface response {
   success: boolean;
@@ -12,12 +13,12 @@ interface response {
   status?: number;
   watchListFlag?: number;
   categoryName?: string | number;
-  boards?: boardsAll[];
-  replaceArrayByBoard?: boards;
+  boards?: boards[];
+  board?: board;
   replaceArrayByComment?: comments[];
 }
 
-interface boardsAll {
+interface boards {
   num: number;
   studentId: string;
   profilePath: string;
@@ -31,7 +32,7 @@ interface boardsAll {
   inDate: string;
 }
 
-interface boards {
+interface board {
   num: number;
   studentId: string;
   profilePath: string;
@@ -73,8 +74,8 @@ interface Category {
 
 class Board {
   body: any;
-  params: any;
-  query: any;
+  params: params;
+  query: query;
   
   constructor(readonly req : express.Request) {
     this.body = req.body;
@@ -123,7 +124,8 @@ class Board {
   async findAllByCategoryNum() : Promise<response | error> {
     const categoryName : keyof Category = this.params.categoryName;
     const categoryNum : number = Category[categoryName];
-    const lastNum : any = this.query.lastNum;
+    const lastNum: string = this.query.lastNum as string;
+    const num = parseInt(lastNum);
 
     if (categoryNum === undefined) {
       return { success: false, msg: "존재하지 않는 게시판입니다." };
@@ -132,10 +134,10 @@ class Board {
     try {
       const boardsAll = await BoardStorage.findAllByCategoryNum(
         categoryNum,
-        lastNum
+        num
       );
 
-      const boards: boardsAll[] = Object.values(
+      const boards: boards[] = Object.values(
         JSON.parse(JSON.stringify(boardsAll))
       );
 
@@ -164,20 +166,20 @@ class Board {
         num
       );
 
-      const board: boards[] = Object.values(
+      let board: any = Object.values(
         JSON.parse(JSON.stringify(boards))
       );
-      const replaceArrayByBoard = board[0];
+      board = board[0];
 
       const replaceArrayByComment: comments[] = Object.values(
         JSON.parse(JSON.stringify(comments))
       );
 
-      if (categoryNum === replaceArrayByBoard.categoryNum) {
+      if (categoryNum === board.categoryNum) {
         return {
           success: true,
           msg: "게시판 상세 조회 성공",
-          replaceArrayByBoard,
+          board,
           replaceArrayByComment,
           watchListFlag,
           categoryName,
@@ -260,8 +262,8 @@ class Board {
   }
 
   async search() : Promise<response | error> {
-    const categoryNum = Category[this.query.categoryName];
-    const title = this.query.content;
+    const categoryNum = Category[this.query.categoryName as string];
+    const title: string = this.query.content as string;
 
     try {
       const boardsSearch = await BoardStorage.findAllByIncludedTitleAndCategory(
@@ -269,7 +271,7 @@ class Board {
         categoryNum
       );
 
-      const boards: boardsAll[] = Object.values(
+      const boards: boards[] = Object.values(
         JSON.parse(JSON.stringify(boardsSearch))
       );
 
@@ -288,9 +290,10 @@ class Board {
   async updateOnlyStatus() : Promise<response | error> {
     const num = this.params.num;
     const body = this.body;
+    const number: number = parseInt(num);
 
     try {
-      const isUpdate = await BoardStorage.updateOnlyStatusByNum(body, num);
+      const isUpdate = await BoardStorage.updateOnlyStatusByNum(body, number);
       if (isUpdate)
         return {
           success: true,

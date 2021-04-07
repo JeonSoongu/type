@@ -219,14 +219,12 @@ var Comment = /** @class */ (function () {
                         return [4 /*yield*/, CommentStorage_1.default.findOneGroupNum(num)];
                     case 1:
                         groupNum = _a.sent();
-                        console.log(groupNum);
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 8, , 9]);
                         return [4 /*yield*/, CommentStorage_1.default.deleteReplyByNum(num, studentId)];
                     case 3:
                         isDelete = _a.sent();
-                        console.log(isDelete);
                         return [4 /*yield*/, CommentStorage_1.default.updateReplyFlag(groupNum)];
                     case 4:
                         replyFlag = _a.sent();
